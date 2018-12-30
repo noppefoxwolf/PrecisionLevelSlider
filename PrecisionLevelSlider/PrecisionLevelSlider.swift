@@ -92,6 +92,8 @@ open class PrecisionLevelSlider: UIControl {
   }
   
   open var isContinuous: Bool = true
+  
+  open var isSnap: Bool = false
 
   private let scrollView = UIScrollView()
   private let contentView = UIView()
@@ -210,7 +212,12 @@ open class PrecisionLevelSlider: UIControl {
 
   fileprivate func offsetToValue() -> Float {
 
-    let progress = (scrollView.contentOffset.x + scrollView.contentInset.left) / contentView.bounds.size.width
+    return offsetToValue(scrollView.contentOffset)
+  }
+  
+  fileprivate func offsetToValue(_ offset: CGPoint) -> Float {
+    
+    let progress = (offset.x + scrollView.contentInset.left) / contentView.bounds.size.width
     let actualProgress = Float(min(max(0, progress), 1))
     let value = ((maximumValue - minimumValue) * actualProgress) + minimumValue
 
@@ -255,6 +262,14 @@ extension PrecisionLevelSlider: UIScrollViewDelegate {
     if decelerate == false && isContinuous == false {
       value = offsetToValue()
       sendActions(for: .valueChanged)
+    }
+  }
+  
+  public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    if isSnap {
+      let toValue = offsetToValue(targetContentOffset.pointee)
+      let snappedValue = floorf(toValue * 10.0) / 10.0
+      targetContentOffset.pointee = valueToOffset(value: snappedValue)
     }
   }
 }

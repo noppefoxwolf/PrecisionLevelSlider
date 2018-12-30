@@ -25,6 +25,7 @@ class ViewController: UIViewController {
     // Do any additional setup after loading the view, typically from a nib.
 
     whiteSmall.isContinuous = false
+    whiteSmall.isSnap = false
     whiteSmall.addTarget(self, action: #selector(whiteLargeValueChanged(slider:)), for: .valueChanged)
     
     let whiteLongColor = UIColor.black
